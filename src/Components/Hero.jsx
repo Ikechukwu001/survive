@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Lottie from 'lottie-react';
-import emptyWalletAnimation from '../assets/Wallet.json'
+import Money from '../assets/Money.json'
 import { BarChart3, CalendarDays, Dice6 } from 'lucide-react';
 
 function Hero() {
@@ -11,7 +11,7 @@ function Hero() {
       
       {/* Lottie Animation */}
       <div className="w-full max-w-sm mx-auto">
-        <Lottie animationData={emptyWalletAnimation} loop={true} />
+        <Lottie animationData={Money} loop={true} />
       </div>
 
       {/* Text Section */}
