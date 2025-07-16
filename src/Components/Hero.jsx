@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Lottie from 'lottie-react';
-import emptyWalletAnimation from '../assets/Wallet animation (1).json'
+import emptyWalletAnimation from '../assets/Wallet.json'
 import { BarChart3, CalendarDays, Dice6 } from 'lucide-react';
 
 function Hero() {
