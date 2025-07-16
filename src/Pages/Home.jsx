@@ -1,7 +1,12 @@
-export default function Home() {
+import React from 'react';
+import Hero from '../Components/Hero'
+
+export default function Home(){
   return (
-    <div className="mt-8 text-center">
-      <h1 className="text-2xl font-bold">Welcome to Survive with 10k</h1>
-    </div>
+    <main>
+      <Hero />
+      {/* You can add more sections like Categories, Plans, Footer, etc. */}
+    </main>
   );
-}
+};
+
