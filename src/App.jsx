@@ -3,7 +3,7 @@ import Navbar from './Components/Navbar'
 import Home from './Pages/Blog'
 import Blog from './Pages/Contact'
 import Projects from './Pages/Project'
-import Contact from './pages/Contact';
+import Contact from './Pages/Contact'
 
 export default function App() {
   return (
