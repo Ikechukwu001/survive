@@ -1,24 +1,74 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './Components/Navbar'
-import Home from './Pages/Home'
-import Blog from './Pages/Blog'
-import Projects from './Pages/Project'
-import Contact from './Pages/Contact'
+// src/App.jsx
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Login from './Pages/Login';
+import SignupInstaller from './Pages/SignupInstaller';
+import SignupClient from './Pages/SignupClient';
+import InstallerDashboard from './Pages/InstallerDashboard';
+import ClientDashboard from './Pages/ClientDashboard';
 
-export default function App() {
+// Protected Route Component
+function ProtectedRoute({ children, requiredRole }) {
+  const { currentUser, userRole } = useAuth();
+
+  if (!currentUser) {
+    return <Navigate to="/login" />;
+  }
+
+  if (requiredRole && userRole !== requiredRole) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
+}
+
+function AppRoutes() {
+  const { currentUser, userRole } = useAuth();
+
+  return (
+    <Routes>
+      <Route path="/login" element={
+        currentUser ? (
+          <Navigate to={userRole === 'installer' ? '/installer/dashboard' : '/client/dashboard'} />
+        ) : (
+          <Login />
+        )
+      } />
+      
+      <Route path="/signup/installer" element={<SignupInstaller />} />
+      <Route path="/signup/client/:inviteCode?" element={<SignupClient />} />
+      
+      <Route
+        path="/installer/dashboard"
+        element={
+          <ProtectedRoute requiredRole="installer">
+            <InstallerDashboard />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route
+        path="/client/dashboard"
+        element={
+          <ProtectedRoute requiredRole="client">
+            <ClientDashboard />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route path="/" element={<Navigate to="/login" />} />
+    </Routes>
+  );
+}
+
+function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col items-center">
-        <Navbar />
-        <div className="w-full max-w-5xl p-4">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </div>
-      </div>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </Router>
   );
 }
+
+export default App;
