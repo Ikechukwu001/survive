@@ -1,7 +1,7 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './Contexts/AuthContext';
-import { ThemeProvider } from './Contexts/ThemeContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './Components/ToastProvider';
 import Login from './Pages/Login';
 import SignupInstaller from './Pages/SignupInstaller';

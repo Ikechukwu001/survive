@@ -1,7 +1,7 @@
 // src/pages/Login.jsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../Contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Sun, Zap, Shield, TrendingUp } from 'lucide-react';
 import { Button, Input, ThemeToggle } from '../Components/UI';
 import { motion } from 'framer-motion';

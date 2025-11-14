@@ -1,6 +1,6 @@
 // src/components/UI.jsx
 import { Moon, Sun as SunIcon } from 'lucide-react';
-import { useTheme } from '../Contexts/ThemeContext';
+import { useTheme } from '../contexts/ThemeContext';
 import clsx from 'clsx';
 
 // Loading Spinner

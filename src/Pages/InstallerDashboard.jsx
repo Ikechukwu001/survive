@@ -9,7 +9,7 @@ import {
   getDoc,
   setDoc
 } from 'firebase/firestore';
-import { useAuth } from '../Contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { toast } from '../Components/ToastProvider';
 import ChatPanel from '../Components/ChatPanel';

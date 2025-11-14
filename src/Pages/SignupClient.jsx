@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
-import { useAuth } from '../Contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { Sun, CheckCircle } from 'lucide-react';
 import { Button, Input, Textarea, ThemeToggle, LoadingSpinner } from '../Components/UI';

@@ -9,7 +9,7 @@ import {
   doc,
   getDoc 
 } from 'firebase/firestore';
-import { useAuth } from '../Contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { 
   Sun, 

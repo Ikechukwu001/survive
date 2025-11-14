@@ -13,7 +13,7 @@ import {
   limit,
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { useAuth } from '../Contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { toast } from './ToastProvider';
 import {
   MessageSquare,
