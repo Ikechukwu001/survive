@@ -1,6 +1,8 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './Contexts/AuthContext';
+import { ThemeProvider } from './Contexts/ThemeContext';
+import { ToastProvider } from './Components/ToastProvider';
 import Login from './Pages/Login';
 import SignupInstaller from './Pages/SignupInstaller';
 import SignupClient from './Pages/SignupClient';
@@ -64,9 +66,11 @@ function AppRoutes() {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }

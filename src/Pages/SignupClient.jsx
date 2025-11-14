@@ -2,9 +2,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../Contexts/AuthContext';
 import { db } from '../firebase';
-import { Sun } from 'lucide-react';
+import { Sun, CheckCircle } from 'lucide-react';
+import { Button, Input, Textarea, ThemeToggle, LoadingSpinner } from '../Components/UI';
+import { motion } from 'framer-motion';
 
 export default function SignupClient() {
   const { inviteCode } = useParams();
@@ -18,6 +20,7 @@ export default function SignupClient() {
     inviteCode: inviteCode || ''
   });
   const [installerInfo, setInstallerInfo] = useState(null);
+  const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
@@ -30,25 +33,39 @@ export default function SignupClient() {
   }, [formData.inviteCode]);
 
   async function verifyInviteCode(code) {
+    if (!code || code.trim() === '') {
+      setInstallerInfo(null);
+      return;
+    }
+
     try {
+      setVerifying(true);
       const inviteDoc = await getDoc(doc(db, 'inviteCodes', code));
+      
       if (inviteDoc.exists()) {
         const inviteData = inviteDoc.data();
         const installerDoc = await getDoc(doc(db, 'users', inviteData.installerId));
+        
         if (installerDoc.exists()) {
           setInstallerInfo({
             id: inviteData.installerId,
             ...installerDoc.data()
           });
           setError('');
+        } else {
+          setInstallerInfo(null);
+          setError('Installer not found. Please contact your installer.');
         }
       } else {
         setInstallerInfo(null);
-        setError('Invalid invite code');
+        setError('Invalid invite code. Please check with your installer.');
       }
     } catch (err) {
-      console.error(err);
-      setError('Error verifying invite code');
+      console.error('Error verifying invite code:', err);
+      setError(`Error: ${err.message}`);
+      setInstallerInfo(null);
+    } finally {
+      setVerifying(false);
     }
   }
 
@@ -95,151 +112,154 @@ export default function SignupClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4 transition-colors duration-300">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-gray-100 dark:border-gray-700"
+      >
         <div className="flex items-center justify-center mb-8">
-          <Sun className="w-12 h-12 text-blue-500 mr-2" />
-          <h1 className="text-3xl font-bold text-gray-800">SolarConnect</h1>
+          <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-lg mr-3">
+            <Sun className="w-10 h-10 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">SolarConnect</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">For Clients</p>
+          </div>
         </div>
 
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-          Client Registration
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 text-center">
+          Create Client Account
         </h2>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-4"
+          >
             {error}
-          </div>
+          </motion.div>
         )}
 
         {installerInfo && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
-            ✓ You will be connected to: <strong>{installerInfo.companyName}</strong>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg mb-4 flex items-center gap-2"
+          >
+            <CheckCircle className="w-5 h-5 flex-shrink-0" />
+            <span>
+              Connected to: <strong>{installerInfo.companyName}</strong>
+            </span>
+          </motion.div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Invite Code
-            </label>
-            <input
+            <Input
               type="text"
               name="inviteCode"
+              label="Installer Invite Code"
               value={formData.inviteCode}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="Enter installer's invite code"
+              placeholder="Enter your installer's code"
             />
+            {verifying && (
+              <div className="mt-2 flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                <LoadingSpinner size="sm" />
+                <span>Verifying code...</span>
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="John Doe"
-            />
-          </div>
+          <Input
+            type="text"
+            name="fullName"
+            label="Full Name"
+            value={formData.fullName}
+            onChange={handleChange}
+            required
+            placeholder="John Doe"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="your@email.com"
-            />
-          </div>
+          <Input
+            type="email"
+            name="email"
+            label="Email Address"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            placeholder="your@email.com"
+            autoComplete="email"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="+234 xxx xxx xxxx"
-            />
-          </div>
+          <Input
+            type="tel"
+            name="phone"
+            label="Phone Number"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+            placeholder="+234 xxx xxx xxxx"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Installation Address
-            </label>
-            <textarea
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-              rows="2"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="Full address where solar is installed"
-            />
-          </div>
+          <Textarea
+            name="address"
+            label="Installation Address"
+            value={formData.address}
+            onChange={handleChange}
+            required
+            rows="2"
+            placeholder="Full address where solar is installed"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="••••••••"
-            />
-          </div>
+          <Input
+            type="password"
+            name="password"
+            label="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            placeholder="••••••••"
+            autoComplete="new-password"
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              placeholder="••••••••"
-            />
-          </div>
+          <Input
+            type="password"
+            name="confirmPassword"
+            label="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            placeholder="••••••••"
+            autoComplete="new-password"
+          />
 
-          <button
+          <Button
             type="submit"
-            disabled={loading || !installerInfo}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+            loading={loading}
+            disabled={!installerInfo}
+            variant="primary"
+            className="w-full py-3 mt-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
           >
-            {loading ? 'Creating Account...' : 'Create Client Account'}
-          </button>
+            Create Client Account
+          </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-500 hover:text-blue-600 font-medium">
+          <Link to="/login" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors">
             Sign In
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }
