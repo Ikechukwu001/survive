@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Sun, Zap, Shield, TrendingUp } from 'lucide-react';
 import { Button, Input, ThemeToggle } from '../Components/UI';
 import { motion } from 'framer-motion';
+import SEO from "../Components/SEO";
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -28,6 +29,12 @@ export default function Login() {
   }
 
   return (
+    <>
+      <SEO
+        title="iSOLAR – Connect Solar Installers and Clients"
+        description="iSOLAR connects verified solar installers with clients, provides troubleshooting tips, and enables direct communication for solar system support."
+        url="https://your-real-domain.com"
+      />
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4 transition-colors duration-300">
       {/* Theme Toggle - Top Right */}
       <div className="absolute top-4 right-4">
@@ -213,5 +220,6 @@ export default function Login() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

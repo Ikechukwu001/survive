@@ -7,6 +7,8 @@ import { db } from '../firebase';
 import { Sun, CheckCircle } from 'lucide-react';
 import { Button, Input, Textarea, ThemeToggle, LoadingSpinner } from '../Components/UI';
 import { motion } from 'framer-motion';
+import SEO from "../Components/SEO";
+
 
 export default function SignupClient() {
   const { inviteCode } = useParams();
@@ -112,6 +114,12 @@ export default function SignupClient() {
   }
 
   return (
+    <>
+      <SEO
+        title="iSOLAR – Sign up page - Connect Solar Installers and Clients"
+        description="iSOLAR connects verified solar installers with clients, provides troubleshooting tips, and enables direct communication for solar system support."
+        url="https://isolar.vercel.app"
+      />
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4 transition-colors duration-300">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
@@ -261,5 +269,6 @@ export default function SignupClient() {
         </p>
       </motion.div>
     </div>
+    </>
   );
 }
