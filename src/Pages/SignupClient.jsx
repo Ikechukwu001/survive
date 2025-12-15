@@ -128,7 +128,7 @@ export default function SignupClient() {
             <Sun className="w-10 h-10 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">SolarConnect</h1>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">iSOLAR</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400">For Clients</p>
           </div>
         </div>
